@@ -3,7 +3,7 @@
 | 页面 | 文件 | 线上地址 |
 |---|---|---|
 | 班长竞选（自己做的） | `index.html` | https://ykwwgfztkm-boop.github.io/banzhang/ |
-| 团支书竞选（PPT 转的） | `tuanshu.html` | https://ykwwgfztkm-boop.github.io/banzhang/tuanshu.html |
+| 团支书竞选（白底 13 页） | `tuanshu.html` | https://ykwwgfztkm-boop.github.io/banzhang/tuanshu.html |
 
 两个都是**单文件**：没有构建步骤、没有外部请求、断网也能打开。
 字体和图片都以 base64 内嵌在文件里。
@@ -23,7 +23,31 @@
 
 地址栏带页码（`…/banzhang/#7`），可以直接跳到第 7 屏。
 
-## 团支书那版是怎么来的
+## 团支书那版（tuanshu.html）
+
+**白底、13 页、每页一条独立时间线**，按茗给的《全局总规则》做的：
+一页占满视口、翻页切换、背景纯白；入场统一淡入 + 位移 / 轻微 scale；
+翻页转场走完才启动本页的时序动画；列表逐条出场；循环动画只有呼吸和浮动。
+
+生成器：[生成白底版.py](/Users/yiming/Projects/campaign-page/生成白底版.py)——
+页面内容、位置、每个元素的 `(动画类型, 延迟, 时长)` 都写在文件顶部的 `PAGES` 表里，
+改文案或改节奏都改那一张表，然后重跑：
+
+```bash
+/usr/bin/python3 生成白底版.py      # 直接覆盖 tuanshu.html
+/usr/bin/python3 生成备用PDF.py     # 13 页投影备用件
+```
+
+**踩过的两个坑**（都在文件里写了注释，别再踩）：
+
+1. `.page > *{position:absolute}` 这一条不能少。元素全是按 `left/top` 摆的，
+   漏了它，`left/top` 对 static 元素无效，**13 页的文字会按文档顺序堆在左上角**。
+2. 文字框不要加 `overflow:hidden`。PPT 里文字超出形状是照常显示的，一裁就缺笔画。
+
+早期还有一版「把 pptx 按原始坐标 1:1 复刻」的（`tuanshu-旧版PPT复刻.html`，
+生成器是 `转PPT为网页.py`）。那版是米金背景、17 屏，已经不用了，留着做对照。
+
+## 早期 PPT 复刻版是怎么来的
 
 不是手抄的。`/tmp/ppt-work/build.py` 直接读 pptx 里的 XML，按原始坐标换算：
 EMU ÷ 9525 = px。形状的位置、尺寸、旋转角、渐变色标、路径顶点、字号、
